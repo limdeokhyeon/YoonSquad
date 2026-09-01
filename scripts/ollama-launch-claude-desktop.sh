@@ -73,14 +73,16 @@ launch_claude_desktop_linux() {
     return
   fi
 
-  for bin in claude-desktop claude; do
-    if command -v "$bin" >/dev/null 2>&1; then
-      log "Launching Claude Desktop (${bin})..."
-      nohup "$bin" >/tmp/claude-desktop.log 2>&1 &
-      disown
-      return
-    fi
-  done
+  # Note: intentionally not matching a bare "claude" binary here — that name
+  # is commonly the Claude Code CLI (e.g. /opt/node22/bin/claude on dev
+  # machines), not the Claude Desktop GUI app, and would silently "launch"
+  # the wrong thing.
+  if command -v claude-desktop >/dev/null 2>&1; then
+    log "Launching Claude Desktop (claude-desktop)..."
+    nohup claude-desktop >/tmp/claude-desktop.log 2>&1 &
+    disown
+    return
+  fi
 
   if command -v gtk-launch >/dev/null 2>&1 && [ -f "/usr/share/applications/claude-desktop.desktop" ]; then
     log "Launching Claude Desktop via desktop entry..."
