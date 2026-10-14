@@ -5,6 +5,9 @@ on:
     branches: [claude/eager-gates-2jfxuc, main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: macos-latest
@@ -29,3 +32,12 @@ jobs:
         with:
           name: PhotoSort-mac
           path: PhotoSort-mac.zip
+      - name: Publish to Releases (latest)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest PhotoSort-mac.zip \
+            --title "PhotoSort (latest build)" \
+            --notes "최신 맥용 앱입니다. PhotoSort-mac.zip을 받아 압축을 풀고 PhotoSort.app을 응용 프로그램 폴더로 옮기세요." \
+            --target "$GITHUB_SHA"
