@@ -1,0 +1,31 @@
+name: Build macOS app
+
+on:
+  push:
+    branches: [claude/eager-gates-2jfxuc, main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python -m unittest discover -s tests
+      - name: Build app
+        run: ./build_app.sh
+      - name: Smoke test (앱이 뜨자마자 죽지 않는지)
+        run: |
+          dist/PhotoSort.app/Contents/MacOS/PhotoSort &
+          pid=$!
+          sleep 6
+          kill -0 "$pid" && kill "$pid"
+      - name: Zip app (실행 권한 보존)
+        run: ditto -c -k --keepParent dist/PhotoSort.app PhotoSort-mac.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PhotoSort-mac
+          path: PhotoSort-mac.zip
