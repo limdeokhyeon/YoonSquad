@@ -37,3 +37,6 @@ python3 main.py
 ```
 python3 -m unittest discover -s tests
 ```
+
+## 아이콘
+`assets/icon.icns`가 앱 아이콘입니다. 바꾸려면 `tools/make_icon.py`를 수정하고 `python3 tools/make_icon.py`(Pillow 필요)를 실행하세요.
